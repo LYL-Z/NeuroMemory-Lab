@@ -1,6 +1,6 @@
 "use strict";
 
-// NeuroMemory Morphology v0.3. Geometry is always local to the browser.
+// NeuroMemory Morphology v0.4. Geometry is always local to the browser.
 // The built-in exemplar is SYNTHETIC. A user-selected SWC is an unverified
 // reconstruction until its specimen, species and publication are established.
 (function (root) {
@@ -154,7 +154,13 @@
       segments: segments.map(v => ({...v, a: pos(v.a), b: pos(v.b),
         r0: v.r0 * factor, r1: v.r1 * factor})),
       somas: somas.map(v => ({...v, at: pos(v.at), r: v.r * factor})),
-      count: byId.size, label: "用户提供的 SWC 重建 · 来源未核验", verified: false,
+      count: byId.size, roots,
+      // Retain original SWC values for reproducibility; these nodes are never
+      // silently treated as ground-truth synaptic or electrophysiology data.
+      originalNodes: [...byId.values()].map(n => ({id: n.id, type: n.type,
+        x: n.at[0], y: n.at[1], z: n.at[2], radius: n.r, parent: n.parent})),
+      normalization: {center, factor},
+      label: "用户提供的 SWC 重建 · 来源未核验", verified: false,
       unitLabel: "坐标已标准化；原文件单位须查证"
     };
     return geometry;
@@ -170,6 +176,7 @@
     let frame = 0, lastTime = 0, lastDraw = 0;
     let dragging = null;
     let elapsed = 0;
+    let trace = null;
 
     function project(v) {
       const cy = Math.cos(yaw), sy = Math.sin(yaw);
@@ -212,7 +219,10 @@
         const p = project(soma.at);
         const radius = Math.max(2.2, Math.min(26, soma.r * p.density));
         context.beginPath(); context.arc(p.x, p.y, radius, 0, Math.PI * 2);
-        context.fillStyle = "#515550"; context.fill();
+        const sample = root.NeuroMorphologyWebGL && root.NeuroMorphologyWebGL.sampleTrace(trace, elapsed * 90);
+        const level = sample === null ? 0 : Math.max(0, Math.min(1, (sample + 65) / 18));
+        const tone = Math.round(73 + level * 75);
+        context.fillStyle = `rgb(${tone},${tone},${tone})`; context.fill();
         context.lineWidth = Math.max(.7, radius * .15);
         context.strokeStyle = "rgba(236,237,233,.85)"; context.stroke();
         if (soma.cell === 0) {
@@ -220,16 +230,8 @@
           context.fillStyle = "#e8e9e5"; context.fill();
         }
       }
-      // A single sparse pulse is a display cue, NEVER measured electrical activity.
-      if (lines.length && !paused) {
-        const index = Math.floor((elapsed * 18) % lines.length);
-        const target = lines[index];
-        const t = (elapsed * .7) % 1;
-        context.beginPath();
-        context.arc(target.a.x + (target.b.x - target.a.x) * t,
-          target.a.y + (target.b.y - target.a.y) * t, 2.5, 0, Math.PI * 2);
-        context.fillStyle = "#b29a82"; context.fill();
-      }
+      // No fabricated traveling pulses. Only the synthetic LIF somatic voltage
+      // is visualized after the user explicitly runs the computational demo.
     }
 
     function resize() {
@@ -302,10 +304,12 @@
     if (typeof ResizeObserver !== "undefined") new ResizeObserver(resize).observe(canvas);
     resize(); setPaused(paused);
     return {
+      engine: "Canvas2D fallback",
       setPaused,
       isPaused: () => paused,
       geometry: () => data,
       setGeometry(next) {data = next; yaw = -.26; pitch = -.17; zoom = 1; draw();},
+      setActivity(next) {trace = next; elapsed = 0; draw();},
       reset() {this.setGeometry(makeSynthetic());},
       resize
     };
