@@ -36,6 +36,12 @@ def main() -> None:
     serve = commands.add_parser("serve", help="Start localhost UI with no external API access")
     serve.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
+    if args.cmd == "neural-demo":
+        # Keep the synthetic neuroscience experiment independent of the vault:
+        # neither create a directory nor open a SQLite connection.
+        from .associative import synthetic_neural_demo
+        _print(synthetic_neural_demo())
+        return
     try:
         with MemoryVault(args.data_dir) as vault:
             if args.cmd == "init":
@@ -47,9 +53,6 @@ def main() -> None:
                 _print(vault.list_sources())
             elif args.cmd == "claims":
                 _print(vault.list_claims())
-            elif args.cmd == "neural-demo":
-                from .associative import synthetic_neural_demo
-                _print(synthetic_neural_demo())
             elif args.cmd == "verify":
                 _print({"source_id": args.source_id, "sha256_matches": vault.verify_source(args.source_id)})
             elif args.cmd == "search":
