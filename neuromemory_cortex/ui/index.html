@@ -8,6 +8,7 @@
   <title>NeuroMemory Cortex — Neural Memory Research Studio</title>
   <link rel="stylesheet" href="/styles.css">
   <script src="/morphology.js" defer></script>
+  <script src="/morphology3d.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
@@ -29,7 +30,7 @@
       <div class="sidebar-bottom">
         <div class="connection"><span class="live-dot"></span><span>仅本机运行</span></div>
         <div class="side-caption">阶段 01+ / 神经实验与可信记忆底座<br>不自动联网 · 不调用云模型</div>
-        <div class="release">NEUROMEMORY CORTEX <span>0.3</span></div>
+        <div class="release">NEUROMEMORY CORTEX <span>0.4</span></div>
       </div>
     </aside>
 
@@ -40,7 +41,7 @@
       </div>
 
       <section class="hero">
-        <div class="eyebrow">NEUROMEMORY / MORPHOLOGY STUDY 003</div>
+        <div class="eyebrow">NEUROMEMORY / MORPHOLOGY STUDY 004</div>
         <h1>记忆的<em>形态。</em></h1>
         <p>观察神经元如何分枝，再探索信息如何被保存。形态有来源，推断有边界。</p>
         <div class="hero-actions"><a href="#archive" class="button button-primary">导入第一份资料 <span>↗</span></a><a href="#recall" class="button button-subtle">探索记忆库 <span>→</span></a></div>
@@ -49,19 +50,31 @@
       <section class="neural-field" id="neural-field" aria-labelledby="neural-field-title">
         <div class="field-header">
           <div><span class="overline">MORPHOLOGY / 01</span><h2 id="neural-field-title">神经形态 <span class="field-heading-en">A Study in Structure</span></h2></div>
-          <span class="field-live">LOCAL / 3D</span>
+          <span class="field-live" id="morph-engine">LOCAL / 3D</span>
         </div>
         <div class="field-canvas-wrap">
           <canvas id="neural-canvas" tabindex="0" aria-label="可旋转的神经元三维形态投影。拖拽旋转，滚轮缩放，键盘方向键调整视角。默认是合成神经结构，不是真实脑扫描。"></canvas>
-          <div class="field-coordinates" aria-hidden="true">CELL STRUCTURE / SPATIAL PROJECTION</div>
+          <div class="field-coordinates" aria-hidden="true">MORPHOLOGY / SURFACE RECONSTRUCTION</div>
           <div class="field-tag" id="morph-source">合成神经网络可视化 · 非真实脑成像</div>
           <div class="field-focus" id="field-focus" aria-live="polite">拖动旋转 · 滚轮缩放</div>
         </div>
         <div class="field-footer">
-          <div class="field-legend" aria-label="形态状态"><span id="morph-count">合成结构 · 加载中</span><span>灰：神经突起 · 赭：演示活动</span></div>
+          <div class="field-legend" aria-label="形态状态"><span id="morph-count">合成结构 · 加载中</span><span>单色表面 · 光照显示结构与模拟膜电位</span></div>
           <div class="field-controls"><label class="field-control swc-upload" for="swc-picker">打开 SWC 形态文件<input id="swc-picker" type="file" accept=".swc,.txt,text/plain" aria-label="打开本地 SWC 神经元形态文件"></label><button type="button" class="field-control" id="morph-reset" hidden>恢复合成演示</button><button type="button" class="field-control" id="field-pause" aria-pressed="false">暂停旋转</button><button type="button" class="field-control field-control-accent" id="run-neural-demo">运行神经计算实验 ↗</button></div>
         </div>
-        <div class="field-readout" id="field-readout" role="status" aria-live="polite">形态渲染与电活动模拟相互独立。SWC 文件仅在此浏览器内解析，不自动上传或存入记忆库。</div>
+        <div class="field-readout" id="field-readout" role="status" aria-live="polite">三维形态为 SWC 半径的表面近似。电活动尚未进行形态特异性拟合；SWC 只在浏览器内解析。</div>
+        <details class="morph-provenance" id="morph-provenance" hidden>
+          <summary>SWC 重建档案 <span>用户声明，未经独立核验</span></summary>
+          <div class="morph-provenance-grid">
+            <label>物种<input id="morph-species" autocomplete="off" maxlength="100" placeholder="如：Mus musculus"></label>
+            <label>脑区 / 细胞类型<input id="morph-region" autocomplete="off" maxlength="120" placeholder="如：皮层锥体细胞"></label>
+            <label>样本 / 神经元编号<input id="morph-specimen" autocomplete="off" maxlength="120" placeholder="原始记录中的 ID"></label>
+            <label>出处 URL / DOI<input id="morph-reference" autocomplete="off" maxlength="300" placeholder="引用的原始重建记录"></label>
+            <label>原始坐标单位<select id="morph-units"><option value="unknown">未知（未确认）</option><option value="um">µm（用户声明）</option><option value="other">其他（用户声明）</option></select></label>
+          </div>
+          <p id="morph-integrity">仅在当前网页会话暂存登记信息；SHA-256 校验中。</p>
+          <p class="morph-provenance-caveat">哈希只用于核对文件完整性，不证明样本、物种或出处真实。此处输入的信息不上传、不保存到个人记忆库。</p>
+        </details>
       </section>
 
       <section class="metrics" aria-label="数据库概况">
@@ -103,8 +116,8 @@
         </div>
       </div>
 
-      <section class="philosophy panel" id="science"><div><span class="overline">RESEARCH BOUNDARY / 003</span><h2>有形态的神经细胞，不等于有意识的大脑。</h2><p>默认画面基于可重复的程序化三维树形模型，属于工程假设；用户自行打开的 SWC 文件可展示实验重建的几何数据，但来源和物种须另行核实。LIF、简化 STDP、Hopfield 是独立的神经计算实验，画面中的活动脉冲仅为演示。没有实现整脑连接组、意识或人格复制。</p></div><div class="philosophy-mark" aria-hidden="true">N<span>·</span>M</div></section>
-      <footer><span>NeuroMemory Cortex · Research Prototype 0.3</span><span>Local by design. Evidence before inference.</span></footer>
+      <section class="philosophy panel" id="science"><div><span class="overline">RESEARCH BOUNDARY / 004</span><h2>有形态的神经细胞，不等于有意识的大脑。</h2><p>默认结构是可重复的程序化合成树，WebGL 表面是 SWC 采样半径的几何近似，不是显微成像。打开的 SWC 文件的物种与出处均需核验。运行实验时，胞体灰度编码的是独立合成 LIF 单细胞膜电位，未拟合该 SWC；STDP 与 Hopfield 也不代表真实生物网络。没有实现整脑连接组、意识或人格复制。</p></div><div class="philosophy-mark" aria-hidden="true">N<span>·</span>M</div></section>
+      <footer><span>NeuroMemory Cortex · Research Prototype 0.4</span><span>Local by design. Evidence before inference.</span></footer>
     </main>
   </div>
   <div id="toast" role="status" aria-live="polite"></div>
