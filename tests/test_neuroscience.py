@@ -1,12 +1,29 @@
 """Independent synthetic-only computational-neuroscience verification."""
 
 import math
+import contextlib
+from io import StringIO
+import json
+import sys
 import unittest
+from unittest.mock import patch
 
 from neuromemory_cortex.associative import HopfieldMemory, synthetic_neural_demo
 from neuromemory_cortex.neurodynamics import (
     LIFParameters, simulate_lif, stdp_delta, update_synaptic_weight,
 )
+
+
+class NeuralCliIndependenceTest(unittest.TestCase):
+    def test_demo_never_initializes_a_memory_vault(self):
+        from neuromemory_cortex.cli import main
+
+        output = StringIO()
+        with patch.object(sys, "argv", ["neuromemory_cortex", "neural-demo"]), \
+             patch("neuromemory_cortex.cli.MemoryVault", side_effect=AssertionError("vault touched")), \
+             contextlib.redirect_stdout(output):
+            main()
+        self.assertFalse(json.loads(output.getvalue())["personal_data_used"])
 
 
 class NeuralDynamicsTest(unittest.TestCase):
