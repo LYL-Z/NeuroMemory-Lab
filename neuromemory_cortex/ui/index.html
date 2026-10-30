@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="cortex-session-token" content="__LOCAL_SESSION_TOKEN__">
+  <meta name="color-scheme" content="light">
+  <title>NeuroMemory Cortex — Neural Memory Research Studio</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="主导航">
+      <a class="brand" href="#home" aria-label="NeuroMemory Cortex 首页">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span><strong>NeuroMemory</strong><small>CORTEX / LOCAL STUDIO</small></span>
+      </a>
+      <div class="side-label">WORKSPACE</div>
+      <nav class="main-nav">
+        <a href="#home" class="nav-item active"><span class="nav-glyph">◈</span> 总览</a>
+        <a href="#neural-field" class="nav-item"><span class="nav-glyph">⋈</span> 神经场域</a>
+        <a href="#archive" class="nav-item"><span class="nav-glyph">▤</span> 来源档案</a>
+        <a href="#recall" class="nav-item"><span class="nav-glyph">⌕</span> 记忆检索</a>
+        <a href="#reviews" class="nav-item"><span class="nav-glyph">◎</span> 记忆审核 <span id="nav-pending" class="nav-count">0</span></a>
+        <a href="#science" class="nav-item"><span class="nav-glyph">⌘</span> 研究边界</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="connection"><span class="live-dot"></span><span>仅本机运行</span></div>
+        <div class="side-caption">阶段 01+ / 神经实验与可信记忆底座<br>不自动联网 · 不调用云模型</div>
+        <div class="release">NEUROMEMORY CORTEX <span>0.2</span></div>
+      </div>
+    </aside>
+
+    <main class="content" id="home">
+      <div class="topbar">
+        <div class="breadcrumb">研究空间 <span>/</span> 记忆核心 <span>/</span> 阶段 01</div>
+        <div class="topbar-right"><span class="security-pill"><span class="live-dot"></span> 个人数据边界：本地</span><span class="small-avatar">N</span></div>
+      </div>
+
+      <section class="hero">
+        <div class="eyebrow"><span class="tiny-star">✳</span> A LAB FOR MEMORY, LEARNING & NEURAL DYNAMICS</div>
+        <h1>让记忆，<em>生长出联系。</em></h1>
+        <p>从可信的经历与知识出发，探索记忆、联想和神经活动。<br>对事实保留证据；对未知保留实验与想象。</p>
+        <div class="hero-actions"><a href="#archive" class="button button-primary">导入第一份资料 <span>↗</span></a><a href="#recall" class="button button-subtle">探索记忆库 <span>→</span></a></div>
+        <div class="hero-decoration" aria-hidden="true"><span class="orbit orbit-a"></span><span class="orbit orbit-b"></span><span class="orbit orbit-c"></span><span class="core-orb"></span><span class="spark spark-a"></span><span class="spark spark-b"></span></div>
+      </section>
+
+      <section class="neural-field" id="neural-field" aria-labelledby="neural-field-title">
+        <div class="field-header">
+          <div><span class="overline">NEURAL FIELD / EXPERIMENT 001</span><h2 id="neural-field-title">神经场域 <span class="field-heading-en">The Memory Field</span></h2></div>
+          <span class="field-live"><span class="field-spark"></span> LIVE RENDER</span>
+        </div>
+        <div class="field-canvas-wrap">
+          <canvas id="neural-canvas" role="img" aria-label="艺术化动态网络：中心神经簇连接四周小型神经簇，全部为确定性合成节点，不包含用户资料。"></canvas>
+          <div class="field-coordinates" aria-hidden="true">SYN / 00 · REFERENCE FIELD</div>
+          <div class="field-tag">合成神经网络可视化 · 非真实脑成像</div>
+          <div class="field-focus" id="field-focus" aria-live="polite">选择节点，观察局部连接</div>
+        </div>
+        <div class="field-footer">
+          <div class="field-legend" aria-label="颜色图例"><span><i class="legend-dot mint"></i> 合成单元</span><span><i class="legend-dot ochre"></i> 活动脉冲</span><span><i class="legend-dot blue"></i> 联想连接</span></div>
+          <div class="field-controls"><button type="button" class="field-control" id="field-pause" aria-pressed="false">暂停动画</button><button type="button" class="field-control field-control-accent" id="run-neural-demo">运行神经计算实验 ↗</button></div>
+        </div>
+        <div class="field-readout" id="field-readout" role="status" aria-live="polite">LIF · STDP · Hopfield：采用可复现的合成模型，点击运行后展示真实计算结果。</div>
+      </section>
+
+      <section class="metrics" aria-label="数据库概况">
+        <div class="metric"><small>ACTIVE SOURCES</small><strong id="metric-sources">0</strong><span>已授权来源</span></div>
+        <div class="metric"><small>TRACEABLE PASSAGES</small><strong id="metric-passages">0</strong><span>可回溯文本片段</span></div>
+        <div class="metric"><small>REVIEW QUEUE</small><strong id="metric-pending">0</strong><span>等待你确认的记忆</span></div>
+        <div class="metric"><small>AUDIT INTEGRITY</small><strong id="metric-audit" class="audit-label">检查中</strong><span>版本与操作链校验</span></div>
+      </section>
+
+      <div class="section-grid">
+        <section class="panel source-panel" id="archive">
+          <div class="panel-heading"><div><span class="overline">01 / SOURCE INTAKE</span><h2>来源档案</h2><p>从你选择的文档开始。不会扫描电脑或自动读取私人资料。</p></div><span class="panel-icon">✦</span></div>
+          <form id="import-form" class="upload-form">
+            <label class="drop-zone" for="source-file">
+              <span class="upload-symbol">＋</span>
+              <strong id="selected-filename">选择一份 Markdown 或 TXT 文档</strong>
+              <span>UTF-8 · 单文件不超过 2 MiB · 保留原始字节哈希</span>
+              <input id="source-file" name="source-file" type="file" accept=".txt,.md,text/plain,text/markdown" required>
+            </label>
+            <div class="upload-controls"><label class="form-label" for="classification">隐私等级</label><select id="classification"><option value="private">私人 · 仅本地</option><option value="restricted">受限 · 待授权</option><option value="public">公开资料</option></select></div>
+            <label class="check-row"><input id="import-consent" type="checkbox" required><span>我确认有权导入这份资料，理解它将在本地创建可检索索引。</span></label>
+            <button class="button button-primary upload-submit" type="submit">确认导入 <span>→</span></button>
+          </form>
+          <div class="source-list-heading"><h3>已登记来源</h3><span id="source-count" class="soft-count">0 项</span></div>
+          <div id="source-list" class="source-list"><div class="empty-state">还没有导入资料。你的记忆空间目前是空白的。</div></div>
+        </section>
+
+        <div class="right-column">
+          <section class="panel recall-panel" id="recall">
+            <div class="panel-heading"><div><span class="overline">02 / EVIDENCE RECALL</span><h2>线索检索</h2><p>先寻找证据，再组织答案。</p></div><span class="panel-icon">⌕</span></div>
+            <form id="search-form" class="search-form"><input id="search-query" placeholder="输入人名、事件、关键词……" aria-label="记忆检索关键词" maxlength="200" required><button type="submit" aria-label="开始检索">↗</button></form>
+            <div id="search-results" class="search-results"><div class="empty-state">输入线索后，这里会展示匹配的原文、来源与位置。</div></div>
+            <p class="feature-note">当前是字面检索（中文支持）。语义联想与多跳推理将在后续阶段加入。</p>
+          </section>
+          <section class="panel review-panel" id="reviews">
+            <div class="panel-heading"><div><span class="overline">03 / HUMAN-IN-THE-LOOP</span><h2>记忆审核</h2><p>推测不会自动成为事实。你始终有最后决定权。</p></div><span class="panel-icon">◎</span></div>
+            <div id="review-list"><div class="empty-state">暂时没有待审核的记忆陈述。</div></div>
+          </section>
+        </div>
+      </div>
+
+      <section class="philosophy panel" id="science"><div><span class="overline">RESEARCH NOTE / 002</span><h2>从可检验的神经元，走向开放的认知问题。</h2><p>本阶段增加可复现的 LIF 脉冲神经元、简化 STDP 突触规则和 Hopfield 联想记忆实验。动态图是合成数据的艺术化视图；它不等于电生理记录，更不等于已实现意识。可信个人记忆仍须获得你逐条授权。</p></div><div class="philosophy-mark" aria-hidden="true">N<span>·</span>M</div></section>
+      <footer><span>NeuroMemory Cortex · Research Prototype 0.2</span><span>Evidence first. Hypotheses tested. Curiosity intact.</span></footer>
+    </main>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
