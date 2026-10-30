@@ -85,6 +85,8 @@ class HttpTestCase(unittest.TestCase):
             data = json.load(response)
         self.assertFalse(data["personal_data_used"])
         self.assertGreater(data["lif_spikes"], 0)
+        self.assertFalse(data["lif_trace"]["morphology_fitted"])
+        self.assertEqual(len(data["lif_trace"]["times_ms"]), len(data["lif_trace"]["voltage_mv"]))
         self.assertEqual(data["recovered_bits"], data["pattern_size"])
         self.assertEqual(self.vault.stats()["active_sources"], 0)
 
@@ -101,9 +103,12 @@ class HttpTestCase(unittest.TestCase):
         self.assertIn('href="/styles.css"', html)
         self.assertIn('src="/app.js"', html)
         self.assertIn('src="/morphology.js"', html)
+        self.assertIn('src="/morphology3d.js"', html)
         self.assertNotIn('src="https://', html)
         with urlopen(self.base + "/morphology.js", timeout=3) as response:
             self.assertIn(b"parseSWC", response.read())
+        with urlopen(self.base + "/morphology3d.js", timeout=3) as response:
+            self.assertIn(b"createViewer", response.read())
 
 
 if __name__ == "__main__":
