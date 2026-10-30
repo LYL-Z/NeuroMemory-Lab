@@ -1,4 +1,4 @@
-# Phase 01+ / v0.3 初步验收记录
+# Phase 01+ / v0.4 初步验收记录
 
 ## 受测内容
 
@@ -10,7 +10,7 @@
 python3 -B -m unittest discover -s tests -v
 ```
 
-最新本地回归测试：**38 tests passed**，包括前端 SWC 解析、合成树形结构确定性、HTTP 静态资源和新增神经计算只读隔离检查。项目的 Windows/Linux GitHub Actions 远程矩阵仍需在本次代码发布后重新检查。
+最新本地回归测试：**40 tests passed**（2026-10-29，Linux 环境），包括原有内存库授权/隔离、HTTP 接口、SWC 解析及新增 WebGL 实例化网格生成、合成电压插值与静态资源测试。项目的 Windows/Linux GitHub Actions 远程矩阵仍需在 v0.4 发布后重新检查。
 
 | 领域 | 验证 |
 |---|---|
@@ -31,10 +31,13 @@ python3 -B -m unittest discover -s tests -v
 | 科学隔离 | 神经演示接口仅处理合成数据，查询前后个人库为空 |
 | 前端静态约束 | 神经形态及控件、仅本地脚本、降低动态效果设置、SWC 不联网 |
 | SWC 结构 | 七列解析、树形分枝、重复节点、循环父链、未知父节点、非法半径 |
+| WebGL 网格数据 | 锥台/球体网格确定性、点数、有限值与非法半径拒绝；**未测试真实 GPU shader 执行** |
+| 信号映射 | LIF 合成电位离散样本线性插值，未宣称与形态拟合 |
+| SWC 来源 | 原始节点保留；UI 提供 SHA-256 与会话级声明字段；**未独立核验真实样本来源** |
 
-额外执行：`node --check neuromemory_cortex/ui/app.js` 与 `node --check neuromemory_cortex/ui/morphology.js` 通过（语法检验）；Node 测试用例验证固定种子生成的结构完全可复现。
+额外执行：`node --check neuromemory_cortex/ui/app.js` 与 `node --check neuromemory_cortex/ui/morphology3d.js` 通过（语法检验）；Node 测试用例验证固定种子生成的结构完全可复现。
 
-参考设计源于用户提供的浅色分簇神经网络截图。v0.3 将它改为单色、形态驱动的 Canvas 2D 三维投影，内置模型是工程合成树形结构，外部 SWC 可以真实重建其提供的节点几何。此处仅为**源码和接口层面的功能检查**：开发环境的 Playwright Chromium 不存在，自动安装时下载内容损坏，因此尚未完成浏览器真实视觉截图与交互人工复核。不能据此声称已经达到参考图视觉水准。
+参考设计源于用户提供的浅色分簇神经网络截图。v0.3 将它改为单色、形态驱动的 Canvas 2D 三维投影；v0.4 则增加 WebGL2 表面近似网格、简化光照、深度遮挡、会话来源声明和独立合成 LIF 信号灰度显示。**此处仍只有源码和接口层面的证据**：开发环境没有可调用的 Chromium/Edge GPU 图形浏览器，尚未取得真实浏览器视觉截图和交互验收。不能声称达到参考图视觉水准或验证 75,000 节点时的实际帧率。
 
 ## 尚未进行的验证
 
