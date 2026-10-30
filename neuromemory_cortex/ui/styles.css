@@ -87,6 +87,21 @@ body{background:#f8f8f6;color:var(--ink)}
 .swc-upload:focus-within{outline:2px solid #858c83;outline-offset:3px}
 .field-control[hidden]{display:none}
 .field-readout{margin:0;padding:10px 0 17px;color:#a0a59f;font-size:10px;letter-spacing:.1px}
+/* v0.4 / grayscale specimen surface + optional, session-only provenance. */
+.field-canvas-wrap{background:#f8f9f7}
+.morph-provenance{border-top:1px solid var(--line);padding:13px 0 20px;margin-top:0;color:#606861}
+.morph-provenance[hidden]{display:none}
+.morph-provenance summary{cursor:pointer;list-style:none;font-size:12px;letter-spacing:.08px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.morph-provenance summary::-webkit-details-marker{display:none}
+.morph-provenance summary::before{content:'+';font-weight:400;color:#858b86;margin-right:6px}
+.morph-provenance[open] summary::before{content:'−'}
+.morph-provenance summary span{font-size:10px;color:#9c9e98;letter-spacing:0}
+.morph-provenance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:12px;margin:19px 0 11px}
+.morph-provenance-grid label{display:flex;flex-direction:column;gap:6px;font-size:10px;color:#737972}
+.morph-provenance-grid input,.morph-provenance-grid select{width:100%;min-width:0;padding:9px 10px;border:1px solid #e2e5e0;border-radius:7px;color:#3d453e;background:#fbfcfa;font-size:12px;font-family:inherit;outline:none}
+.morph-provenance-grid input:focus,.morph-provenance-grid select:focus{border-color:#929992}
+.morph-provenance p{font:10px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;color:#878e87;margin:7px 0;overflow-wrap:anywhere}
+.morph-provenance .morph-provenance-caveat{font-family:inherit;color:#9a9f99}
 .metrics{margin:17px 0 25px;box-shadow:none;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;backdrop-filter:none}
 .metric{padding:16px 17px 17px;min-height:108px}.metric:first-child{padding-left:0}.metric+.metric{border-left:1px solid var(--line)}
 .metric small{color:#9a9f99;font-size:9px}.metric strong{font-size:30px;margin:6px 0 0;font-weight:500}
