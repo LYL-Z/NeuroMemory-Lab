@@ -224,10 +224,15 @@ refresh().catch(e => alertLocal(`本地服务连接异常：${e.message}`));
   const resetButton = byId("morph-reset");
   const sourceNote = byId("morph-source");
   const counter = byId("morph-count");
+  const provenance = byId("morph-provenance");
+  const integrity = byId("morph-integrity");
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let viewer;
   try {
-    viewer = window.NeuroMorphology.createViewer(canvas, {reduceMotion: prefersReducedMotion});
+    const exemplar = window.NeuroMorphology.makeSynthetic();
+    viewer = window.NeuroMorphologyWebGL.createViewer(canvas, exemplar, {reduceMotion: prefersReducedMotion}) ||
+      window.NeuroMorphology.createViewer(canvas, {reduceMotion: prefersReducedMotion});
+    byId("morph-engine").textContent = viewer.engine === "WebGL2" ? "LOCAL / WEBGL2" : "LOCAL / CANVAS2D";
   } catch (error) {
     focus.textContent = `无法初始化形态视图：${error.message}`;
     return;
@@ -240,7 +245,8 @@ refresh().catch(e => alertLocal(`本地服务连接异常：${e.message}`));
   }
 
   function updateDescription(geometry) {
-    counter.textContent = `${geometry.count.toLocaleString("zh-CN")} 个形态采样节点 · ${geometry.unitLabel}`;
+    const unit = geometry.originalNodes ? "SWC 采样节点" : "合成绘制元件";
+    counter.textContent = `${geometry.count.toLocaleString("zh-CN")} 个${unit} · ${geometry.unitLabel}`;
     sourceNote.textContent = geometry.label + " · 非真实脑成像";
     focus.textContent = "拖动旋转 · 滚轮缩放 · 方向键调整";
   }
@@ -254,11 +260,23 @@ refresh().catch(e => alertLocal(`本地服务连接异常：${e.message}`));
     try {
       if (file.size > 5 * 1024 * 1024) throw new Error("文件超过 5 MiB 上限。");
       const geometry = window.NeuroMorphology.parseSWC(await file.text());
+      // Hash is computed on exact original bytes. It authenticates content
+      // equality only, never the biological provenance claimed by a user.
+      const raw = await file.arrayBuffer();
+      let hex = "不可用：当前浏览器缺少安全的 SHA-256 接口";
+      if (window.crypto && window.crypto.subtle) {
+        const hash = await window.crypto.subtle.digest("SHA-256", raw);
+        hex = Array.from(new Uint8Array(hash), b => b.toString(16).padStart(2, "0")).join("");
+      }
       viewer.setGeometry(geometry);
       updateDescription(geometry);
       sourceNote.textContent = `本地 SWC：${file.name} · 未核验来源或物种 · 未上传`;
+      for (const field of ["morph-species", "morph-region", "morph-specimen", "morph-reference"]) byId(field).value = "";
+      byId("morph-units").value = "unknown";
+      integrity.textContent = `SHA-256：${hex} · ${geometry.count.toLocaleString("zh-CN")} 节点 / ${geometry.roots} 根节点 · 文件仅在当前会话中打开`;
+      provenance.hidden = false;
       resetButton.hidden = false;
-      alertLocal("SWC 形态已在浏览器内加载；请自行核实物种、样本、作者和来源。");
+      alertLocal("SWC 形态已在浏览器内加载；下方可填写来源声明，系统不会自动将其认定为已核验。");
     } catch (error) {
       alertLocal(`SWC 解析失败：${error.message}`);
     } finally {
@@ -268,6 +286,10 @@ refresh().catch(e => alertLocal(`本地服务连接异常：${e.message}`));
   resetButton.addEventListener("click", () => {
     viewer.reset();
     updateDescription(viewer.geometry());
+    provenance.hidden = true;
+    integrity.textContent = "";
+    for (const field of ["morph-species", "morph-region", "morph-specimen", "morph-reference"]) byId(field).value = "";
+    byId("morph-units").value = "unknown";
     resetButton.hidden = true;
   });
 
@@ -277,10 +299,15 @@ refresh().catch(e => alertLocal(`本地服务连接异常：${e.message}`));
     trigger.textContent = "计算中…";
     try {
       const result = await request("/api/neural-demo");
+      if (result.personal_data_used !== false || result.mode !== "synthetic_only" ||
+          !result.lif_trace || result.lif_trace.morphology_fitted !== false) {
+        throw new Error("后端未返回符合数据隔离要求的合成神经追踪记录。");
+      }
+      viewer.setActivity(result.lif_trace);
       byId("field-readout").textContent =
-        `纯合成实验 · LIF: ${result.lif_spikes} 次发放 / 160 ms · STDP: +${result.stdp_potentiation} / ${result.stdp_depression} · ` +
+        `纯合成电活动 · 胞体亮度映射 LIF 电压（未对显示的形态拟合） · ${result.lif_spikes} 次发放 / 160 ms · STDP: +${result.stdp_potentiation} / ${result.stdp_depression} · ` +
         `Hopfield: ${result.recovered_bits}/${result.pattern_size} 位恢复 · 能量 ${result.energy_before} → ${result.energy_after}`;
-      alertLocal("合成神经计算完成；不涉及任何个人记忆，也不代表画面中的细胞在发放。");
+      alertLocal("LIF 合成膜电位已映射到显示胞体；并非该形态的生物电生理测量或拟合结果，不涉及个人记忆。");
     } catch (error) {
       alertLocal(`神经演示失败：${error.message}`);
     } finally {

@@ -21,7 +21,7 @@ UI_ROOT = Path(__file__).resolve().parent / "ui"
 def make_handler(vault: MemoryVault, token: str):
 
     class Handler(BaseHTTPRequestHandler):
-        server_version = "NeuroMemoryCortex/0.3"
+        server_version = "NeuroMemoryCortex/0.4"
 
         def _headers(self, status=HTTPStatus.OK, mime="application/json; charset=utf-8", size=0):
             self.send_response(status)
@@ -76,7 +76,7 @@ def make_handler(vault: MemoryVault, token: str):
                     return self._send(HTTPStatus.OK, vault.stats())
                 if parsed.path == "/api/neural-demo":
                     from .associative import synthetic_neural_demo
-                    return self._send(HTTPStatus.OK, synthetic_neural_demo())
+                    return self._send(HTTPStatus.OK, synthetic_neural_demo(include_trace=True))
                 if parsed.path == "/api/sources":
                     return self._send(HTTPStatus.OK, {"items": vault.list_sources()})
                 if parsed.path == "/api/claims":
@@ -88,6 +88,7 @@ def make_handler(vault: MemoryVault, token: str):
                 assets = {"/": ("index.html", "text/html; charset=utf-8"),
                           "/styles.css": ("styles.css", "text/css; charset=utf-8"),
                           "/morphology.js": ("morphology.js", "application/javascript; charset=utf-8"),
+                          "/morphology3d.js": ("morphology3d.js", "application/javascript; charset=utf-8"),
                           "/app.js": ("app.js", "application/javascript; charset=utf-8")}
                 if parsed.path not in assets:
                     return self._send(HTTPStatus.NOT_FOUND, {"error": "Not found"})

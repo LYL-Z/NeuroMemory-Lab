@@ -67,7 +67,7 @@ class HopfieldMemory:
         return RecallResult(tuple(state), max_sweeps, False, tuple(energies))
 
 
-def synthetic_neural_demo() -> dict:
+def synthetic_neural_demo(*, include_trace: bool = False) -> dict:
     """Repeatable read-only demo; neither personal sources nor a model call."""
     from .neurodynamics import simulate_lif, stdp_delta
 
@@ -79,7 +79,7 @@ def synthetic_neural_demo() -> dict:
     network = HopfieldMemory([original])
     result = network.recall(tuple(cue))
     trace = simulate_lif(2.2, duration_ms=160.0)
-    return {
+    payload = {
         "mode": "synthetic_only",
         "personal_data_used": False,
         "neuron_model": "LIF / forward Euler",
@@ -97,3 +97,13 @@ def synthetic_neural_demo() -> dict:
         "energy_after": round(result.energies[-1], 6),
         "scientific_status": "toy computational models, not a human-brain simulation",
     }
+    if include_trace:
+        # Used only in the read-only local UI visualization. Never fitted to a
+        # SWC specimen; keep CLI output compact by default.
+        payload["lif_trace"] = {
+            "times_ms": trace["times_ms"],
+            "voltage_mv": trace["voltage_mv"],
+            "spikes_ms": trace["spikes_ms"],
+            "morphology_fitted": False,
+        }
+    return payload
