@@ -21,7 +21,7 @@ UI_ROOT = Path(__file__).resolve().parent / "ui"
 def make_handler(vault: MemoryVault, token: str):
 
     class Handler(BaseHTTPRequestHandler):
-        server_version = "NeuroMemoryCortex/0.1"
+        server_version = "NeuroMemoryCortex/0.3"
 
         def _headers(self, status=HTTPStatus.OK, mime="application/json; charset=utf-8", size=0):
             self.send_response(status)
@@ -87,6 +87,7 @@ def make_handler(vault: MemoryVault, token: str):
                     return self._send(HTTPStatus.OK, {"items": vault.search(qs.get("q", [""])[0])})
                 assets = {"/": ("index.html", "text/html; charset=utf-8"),
                           "/styles.css": ("styles.css", "text/css; charset=utf-8"),
+                          "/morphology.js": ("morphology.js", "application/javascript; charset=utf-8"),
                           "/app.js": ("app.js", "application/javascript; charset=utf-8")}
                 if parsed.path not in assets:
                     return self._send(HTTPStatus.NOT_FOUND, {"error": "Not found"})

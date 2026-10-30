@@ -100,7 +100,10 @@ class HttpTestCase(unittest.TestCase):
         self.assertIn(self.token, html)
         self.assertIn('href="/styles.css"', html)
         self.assertIn('src="/app.js"', html)
+        self.assertIn('src="/morphology.js"', html)
         self.assertNotIn('src="https://', html)
+        with urlopen(self.base + "/morphology.js", timeout=3) as response:
+            self.assertIn(b"parseSWC", response.read())
 
 
 if __name__ == "__main__":

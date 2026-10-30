@@ -7,30 +7,29 @@
   <meta name="color-scheme" content="light">
   <title>NeuroMemory Cortex — Neural Memory Research Studio</title>
   <link rel="stylesheet" href="/styles.css">
+  <script src="/morphology.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
-  <div class="ambient ambient-one"></div>
-  <div class="ambient ambient-two"></div>
   <div class="app-shell">
     <aside class="sidebar" aria-label="主导航">
-      <a class="brand" href="#home" aria-label="NeuroMemory Cortex 首页">
+      <a class="brand" href="#home" aria-label="NeuroMemory Cortex 首页" title="NeuroMemory Cortex">
         <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
         <span><strong>NeuroMemory</strong><small>CORTEX / LOCAL STUDIO</small></span>
       </a>
       <div class="side-label">WORKSPACE</div>
       <nav class="main-nav">
-        <a href="#home" class="nav-item active"><span class="nav-glyph">◈</span> 总览</a>
-        <a href="#neural-field" class="nav-item"><span class="nav-glyph">⋈</span> 神经场域</a>
-        <a href="#archive" class="nav-item"><span class="nav-glyph">▤</span> 来源档案</a>
-        <a href="#recall" class="nav-item"><span class="nav-glyph">⌕</span> 记忆检索</a>
-        <a href="#reviews" class="nav-item"><span class="nav-glyph">◎</span> 记忆审核 <span id="nav-pending" class="nav-count">0</span></a>
-        <a href="#science" class="nav-item"><span class="nav-glyph">⌘</span> 研究边界</a>
+        <a href="#home" class="nav-item active" title="总览"><span class="nav-glyph" aria-hidden="true">◈</span><span class="nav-label">总览</span></a>
+        <a href="#neural-field" class="nav-item" title="神经形态"><span class="nav-glyph" aria-hidden="true">⋈</span><span class="nav-label">神经形态</span></a>
+        <a href="#archive" class="nav-item" title="来源档案"><span class="nav-glyph" aria-hidden="true">▤</span><span class="nav-label">来源档案</span></a>
+        <a href="#recall" class="nav-item" title="记忆检索"><span class="nav-glyph" aria-hidden="true">⌕</span><span class="nav-label">记忆检索</span></a>
+        <a href="#reviews" class="nav-item" title="记忆审核"><span class="nav-glyph" aria-hidden="true">◎</span><span class="nav-label">记忆审核</span><span id="nav-pending" class="nav-count">0</span></a>
+        <a href="#science" class="nav-item" title="研究边界"><span class="nav-glyph" aria-hidden="true">⌘</span><span class="nav-label">研究边界</span></a>
       </nav>
       <div class="sidebar-bottom">
         <div class="connection"><span class="live-dot"></span><span>仅本机运行</span></div>
         <div class="side-caption">阶段 01+ / 神经实验与可信记忆底座<br>不自动联网 · 不调用云模型</div>
-        <div class="release">NEUROMEMORY CORTEX <span>0.2</span></div>
+        <div class="release">NEUROMEMORY CORTEX <span>0.3</span></div>
       </div>
     </aside>
 
@@ -41,29 +40,28 @@
       </div>
 
       <section class="hero">
-        <div class="eyebrow"><span class="tiny-star">✳</span> A LAB FOR MEMORY, LEARNING & NEURAL DYNAMICS</div>
-        <h1>让记忆，<em>生长出联系。</em></h1>
-        <p>从可信的经历与知识出发，探索记忆、联想和神经活动。<br>对事实保留证据；对未知保留实验与想象。</p>
+        <div class="eyebrow">NEUROMEMORY / MORPHOLOGY STUDY 003</div>
+        <h1>记忆的<em>形态。</em></h1>
+        <p>观察神经元如何分枝，再探索信息如何被保存。形态有来源，推断有边界。</p>
         <div class="hero-actions"><a href="#archive" class="button button-primary">导入第一份资料 <span>↗</span></a><a href="#recall" class="button button-subtle">探索记忆库 <span>→</span></a></div>
-        <div class="hero-decoration" aria-hidden="true"><span class="orbit orbit-a"></span><span class="orbit orbit-b"></span><span class="orbit orbit-c"></span><span class="core-orb"></span><span class="spark spark-a"></span><span class="spark spark-b"></span></div>
       </section>
 
       <section class="neural-field" id="neural-field" aria-labelledby="neural-field-title">
         <div class="field-header">
-          <div><span class="overline">NEURAL FIELD / EXPERIMENT 001</span><h2 id="neural-field-title">神经场域 <span class="field-heading-en">The Memory Field</span></h2></div>
-          <span class="field-live"><span class="field-spark"></span> LIVE RENDER</span>
+          <div><span class="overline">MORPHOLOGY / 01</span><h2 id="neural-field-title">神经形态 <span class="field-heading-en">A Study in Structure</span></h2></div>
+          <span class="field-live">LOCAL / 3D</span>
         </div>
         <div class="field-canvas-wrap">
-          <canvas id="neural-canvas" role="img" aria-label="艺术化动态网络：中心神经簇连接四周小型神经簇，全部为确定性合成节点，不包含用户资料。"></canvas>
-          <div class="field-coordinates" aria-hidden="true">SYN / 00 · REFERENCE FIELD</div>
-          <div class="field-tag">合成神经网络可视化 · 非真实脑成像</div>
-          <div class="field-focus" id="field-focus" aria-live="polite">选择节点，观察局部连接</div>
+          <canvas id="neural-canvas" tabindex="0" aria-label="可旋转的神经元三维形态投影。拖拽旋转，滚轮缩放，键盘方向键调整视角。默认是合成神经结构，不是真实脑扫描。"></canvas>
+          <div class="field-coordinates" aria-hidden="true">CELL STRUCTURE / SPATIAL PROJECTION</div>
+          <div class="field-tag" id="morph-source">合成神经网络可视化 · 非真实脑成像</div>
+          <div class="field-focus" id="field-focus" aria-live="polite">拖动旋转 · 滚轮缩放</div>
         </div>
         <div class="field-footer">
-          <div class="field-legend" aria-label="颜色图例"><span><i class="legend-dot mint"></i> 合成单元</span><span><i class="legend-dot ochre"></i> 活动脉冲</span><span><i class="legend-dot blue"></i> 联想连接</span></div>
-          <div class="field-controls"><button type="button" class="field-control" id="field-pause" aria-pressed="false">暂停动画</button><button type="button" class="field-control field-control-accent" id="run-neural-demo">运行神经计算实验 ↗</button></div>
+          <div class="field-legend" aria-label="形态状态"><span id="morph-count">合成结构 · 加载中</span><span>灰：神经突起 · 赭：演示活动</span></div>
+          <div class="field-controls"><label class="field-control swc-upload" for="swc-picker">打开 SWC 形态文件<input id="swc-picker" type="file" accept=".swc,.txt,text/plain" aria-label="打开本地 SWC 神经元形态文件"></label><button type="button" class="field-control" id="morph-reset" hidden>恢复合成演示</button><button type="button" class="field-control" id="field-pause" aria-pressed="false">暂停旋转</button><button type="button" class="field-control field-control-accent" id="run-neural-demo">运行神经计算实验 ↗</button></div>
         </div>
-        <div class="field-readout" id="field-readout" role="status" aria-live="polite">LIF · STDP · Hopfield：采用可复现的合成模型，点击运行后展示真实计算结果。</div>
+        <div class="field-readout" id="field-readout" role="status" aria-live="polite">形态渲染与电活动模拟相互独立。SWC 文件仅在此浏览器内解析，不自动上传或存入记忆库。</div>
       </section>
 
       <section class="metrics" aria-label="数据库概况">
@@ -105,8 +103,8 @@
         </div>
       </div>
 
-      <section class="philosophy panel" id="science"><div><span class="overline">RESEARCH NOTE / 002</span><h2>从可检验的神经元，走向开放的认知问题。</h2><p>本阶段增加可复现的 LIF 脉冲神经元、简化 STDP 突触规则和 Hopfield 联想记忆实验。动态图是合成数据的艺术化视图；它不等于电生理记录，更不等于已实现意识。可信个人记忆仍须获得你逐条授权。</p></div><div class="philosophy-mark" aria-hidden="true">N<span>·</span>M</div></section>
-      <footer><span>NeuroMemory Cortex · Research Prototype 0.2</span><span>Evidence first. Hypotheses tested. Curiosity intact.</span></footer>
+      <section class="philosophy panel" id="science"><div><span class="overline">RESEARCH BOUNDARY / 003</span><h2>有形态的神经细胞，不等于有意识的大脑。</h2><p>默认画面基于可重复的程序化三维树形模型，属于工程假设；用户自行打开的 SWC 文件可展示实验重建的几何数据，但来源和物种须另行核实。LIF、简化 STDP、Hopfield 是独立的神经计算实验，画面中的活动脉冲仅为演示。没有实现整脑连接组、意识或人格复制。</p></div><div class="philosophy-mark" aria-hidden="true">N<span>·</span>M</div></section>
+      <footer><span>NeuroMemory Cortex · Research Prototype 0.3</span><span>Local by design. Evidence before inference.</span></footer>
     </main>
   </div>
   <div id="toast" role="status" aria-live="polite"></div>

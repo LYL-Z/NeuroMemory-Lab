@@ -214,209 +214,88 @@ byId("search-form").addEventListener("submit", async event => {
 async function refresh() { await Promise.all([updateStats(), updateSources(), updateReviews()]); }
 refresh().catch(e => alertLocal(`本地服务连接异常：${e.message}`));
 
-// This canvas is a seeded *concept visualization*, not neural recordings.
-// No data are fetched from personal memories, remote services or the model.
-(function createNeuralField() {
+// Morphological renderer is separate from the provenance-controlled memory vault.
+// The synthetic scene and SWC file picker never send geometry over the network.
+(function startMorphology() {
   const canvas = byId("neural-canvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-  const wrap = canvas.parentElement;
   const focus = byId("field-focus");
   const pauseButton = byId("field-pause");
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let paused = reduceMotion;
-  let frame = 0;
-  let width = 1;
-  let height = 1;
-  let selected = -1;
-  let activityTime = 0;
-
-  function randomGenerator(seed) {
-    let state = seed >>> 0;
-    return () => {
-      state += 0x6D2B79F5;
-      let x = state;
-      x = Math.imul(x ^ x >>> 15, x | 1);
-      x ^= x + Math.imul(x ^ x >>> 7, x | 61);
-      return ((x ^ x >>> 14) >>> 0) / 4294967296;
-    };
-  }
-  const rand = randomGenerator(0x1C00C0DE);
-  const nodes = [];
-  const edges = [];
-  const clusters = [
-    {x: .49, y: .53, n: 210, sx: .145, sy: .245, group: 0},
-    {x: .18, y: .33, n: 23, sx: .042, sy: .09, group: 1},
-    {x: .18, y: .78, n: 27, sx: .05, sy: .10, group: 2},
-    {x: .75, y: .17, n: 37, sx: .07, sy: .12, group: 3},
-    {x: .79, y: .74, n: 25, sx: .052, sy: .085, group: 4},
-  ];
-
-  for (const cluster of clusters) {
-    const first = nodes.length;
-    for (let i = 0; i < cluster.n; i++) {
-      const angle = rand() * Math.PI * 2;
-      // sqrt samples a uniform disk, with a slight dense central nucleus.
-      const radius = Math.pow(rand(), cluster.group === 0 ? .72 : .55);
-      nodes.push({
-        x: cluster.x + Math.cos(angle) * radius * cluster.sx,
-        y: cluster.y + Math.sin(angle) * radius * cluster.sy,
-        group: cluster.group,
-        tone: rand(), phase: rand() * Math.PI * 2,
-        radius: cluster.group === 0 ? 1.2 + rand() * 1.5 : 1 + rand() * 1.2,
-      });
-    }
-    const last = nodes.length;
-    for (let i = first + 1; i < last; i++) {
-      const nearest = [];
-      for (let j = first; j < i; j++) {
-        const dx = nodes[i].x - nodes[j].x;
-        const dy = (nodes[i].y - nodes[j].y) * .66;
-        nearest.push({j, distance: dx * dx + dy * dy});
-      }
-      nearest.sort((a, b) => a.distance - b.distance);
-      const degree = i - first > 3 ? 2 : 1;
-      for (const neighbor of nearest.slice(0, degree)) {
-        edges.push({a: i, b: neighbor.j, long: false, phase: rand()});
-      }
-    }
-  }
-  // A few long-range projections, explicitly illustrative rather than anatomical.
-  for (let group = 1; group <= 4; group++) {
-    const outer = nodes.map((node, i) => ({node, i})).filter(item => item.node.group === group);
-    for (let j = 0; j < 3; j++) {
-      const peripheral = outer[Math.floor(rand() * outer.length)].i;
-      const central = Math.floor(rand() * clusters[0].n);
-      edges.push({a: peripheral, b: central, long: true, phase: rand()});
-    }
-  }
-
-  function resize() {
-    const bounds = wrap.getBoundingClientRect();
-    width = Math.max(300, bounds.width);
-    height = Math.max(280, canvas.getBoundingClientRect().height);
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (paused) render();
-  }
-
-  function point(node) {
-    const drift = paused ? 0 : .0018;
-    return {
-      x: (node.x + drift * Math.sin(activityTime * .7 + node.phase)) * width,
-      y: (node.y + drift * Math.cos(activityTime * .6 + node.phase)) * height,
-    };
-  }
-
-  function render() {
-    ctx.clearRect(0, 0, width, height);
-    const positions = nodes.map(point);
-    // Quiet concentric fields preserve the airy, scientific illustration style.
-    for (const cluster of clusters) {
-      ctx.beginPath();
-      ctx.ellipse(cluster.x * width, cluster.y * height,
-        cluster.sx * width * 1.15, cluster.sy * height * 1.1,
-        0, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(116, 145, 125, .15)";
-      ctx.setLineDash([3, 6]);
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-    ctx.setLineDash([]);
-    for (const edge of edges) {
-      const a = positions[edge.a];
-      const b = positions[edge.b];
-      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
-      ctx.strokeStyle = edge.long ? "rgba(104, 158, 164, .17)" : "rgba(93, 133, 137, .18)";
-      ctx.lineWidth = edge.long ? .65 : .6;
-      ctx.stroke();
-    }
-    // Sparse activity packets travel along projections; visual only.
-    if (!paused) {
-      for (let i = 0; i < edges.length; i += 19) {
-        const edge = edges[i];
-        const a = positions[edge.a], b = positions[edge.b];
-        const t = (activityTime * .15 + edge.phase) % 1;
-        ctx.beginPath();
-        ctx.arc(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, 1.35, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(198, 128, 84, .54)";
-        ctx.fill();
-      }
-    }
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i], p = positions[i];
-      const emphasized = i === selected;
-      const alpha = .50 + .32 * (paused ? .5 : Math.sin(activityTime * 1.1 + node.phase) ** 2);
-      const color = node.tone < .14 ? `rgba(196, 135, 73, ${alpha})`
-        : node.tone < .66 ? `rgba(123, 164, 107, ${alpha})`
-          : `rgba(97, 164, 178, ${alpha})`;
-      ctx.beginPath(); ctx.arc(p.x, p.y, emphasized ? 5 : node.radius, 0, Math.PI * 2);
-      ctx.fillStyle = emphasized ? "#b55f47" : color; ctx.fill();
-      if (emphasized) {
-        ctx.beginPath(); ctx.arc(p.x, p.y, 12, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(181,95,71,.45)"; ctx.lineWidth = 1; ctx.stroke();
-      }
-    }
-  }
-
-  function animate(timestamp) {
-    if (paused) { frame = 0; return; }
-    activityTime = timestamp / 1000;
-    if (!document.hidden) render();
-    frame = requestAnimationFrame(animate);
+  const fileInput = byId("swc-picker");
+  const resetButton = byId("morph-reset");
+  const sourceNote = byId("morph-source");
+  const counter = byId("morph-count");
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let viewer;
+  try {
+    viewer = window.NeuroMorphology.createViewer(canvas, {reduceMotion: prefersReducedMotion});
+  } catch (error) {
+    focus.textContent = `无法初始化形态视图：${error.message}`;
+    return;
   }
 
   function setPaused(next) {
-    paused = next;
-    pauseButton.textContent = paused ? "继续动画" : "暂停动画";
-    pauseButton.setAttribute("aria-pressed", String(paused));
-    cancelAnimationFrame(frame);
-    if (paused) { frame = 0; render(); }
-    else frame = requestAnimationFrame(animate);
+    viewer.setPaused(next);
+    pauseButton.textContent = next ? "继续旋转" : "暂停旋转";
+    pauseButton.setAttribute("aria-pressed", String(next));
   }
 
-  pauseButton.addEventListener("click", () => setPaused(!paused));
-  canvas.addEventListener("pointermove", e => {
-    const rect = canvas.getBoundingClientRect();
-    const px = e.clientX - rect.left, py = e.clientY - rect.top;
-    let nearest = -1, dist = 14 * 14;
-    for (let i = 0; i < nodes.length; i++) {
-      const p = point(nodes[i]);
-      const d = (p.x - px) ** 2 + (p.y - py) ** 2;
-      if (d < dist) { dist = d; nearest = i; }
-    }
-    if (selected !== nearest) {
-      selected = nearest;
-      focus.textContent = nearest < 0 ? "选择节点，观察局部连接"
-        : `SYN-${String(nearest + 1).padStart(3, "0")} · 合成单元 · 簇 ${nodes[nearest].group + 1}`;
-      if (paused) render();
+  function updateDescription(geometry) {
+    counter.textContent = `${geometry.count.toLocaleString("zh-CN")} 个形态采样节点 · ${geometry.unitLabel}`;
+    sourceNote.textContent = geometry.label + " · 非真实脑成像";
+    focus.textContent = "拖动旋转 · 滚轮缩放 · 方向键调整";
+  }
+
+  updateDescription(viewer.geometry());
+  setPaused(prefersReducedMotion);
+  pauseButton.addEventListener("click", () => setPaused(!viewer.isPaused()));
+  fileInput.addEventListener("change", async event => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    try {
+      if (file.size > 5 * 1024 * 1024) throw new Error("文件超过 5 MiB 上限。");
+      const geometry = window.NeuroMorphology.parseSWC(await file.text());
+      viewer.setGeometry(geometry);
+      updateDescription(geometry);
+      sourceNote.textContent = `本地 SWC：${file.name} · 未核验来源或物种 · 未上传`;
+      resetButton.hidden = false;
+      alertLocal("SWC 形态已在浏览器内加载；请自行核实物种、样本、作者和来源。");
+    } catch (error) {
+      alertLocal(`SWC 解析失败：${error.message}`);
+    } finally {
+      fileInput.value = "";
     }
   });
-  canvas.addEventListener("pointerleave", () => {
-    selected = -1; focus.textContent = "选择节点，观察局部连接";
-    if (paused) render();
+  resetButton.addEventListener("click", () => {
+    viewer.reset();
+    updateDescription(viewer.geometry());
+    resetButton.hidden = true;
   });
-  window.addEventListener("resize", resize);
-  if (typeof ResizeObserver !== "undefined") new ResizeObserver(resize).observe(wrap);
-  resize();
-  setPaused(paused);
 
   byId("run-neural-demo").addEventListener("click", async () => {
-    const button = byId("run-neural-demo");
-    button.disabled = true; button.textContent = "计算中…";
+    const trigger = byId("run-neural-demo");
+    trigger.disabled = true;
+    trigger.textContent = "计算中…";
     try {
       const result = await request("/api/neural-demo");
       byId("field-readout").textContent =
-        `纯合成数据 · LIF: ${result.lif_spikes} 次发放 / 160 ms · STDP: +${result.stdp_potentiation} / ${result.stdp_depression} · ` +
+        `纯合成实验 · LIF: ${result.lif_spikes} 次发放 / 160 ms · STDP: +${result.stdp_potentiation} / ${result.stdp_depression} · ` +
         `Hopfield: ${result.recovered_bits}/${result.pattern_size} 位恢复 · 能量 ${result.energy_before} → ${result.energy_after}`;
-      alertLocal("已完成可复现的神经动力学演示；没有读取你的个人记忆。")
-    } catch (e) {
-      alertLocal(`神经演示失败：${e.message}`);
+      alertLocal("合成神经计算完成；不涉及任何个人记忆，也不代表画面中的细胞在发放。");
+    } catch (error) {
+      alertLocal(`神经演示失败：${error.message}`);
     } finally {
-      button.disabled = false; button.textContent = "运行神经计算实验 ↗";
+      trigger.disabled = false;
+      trigger.textContent = "运行神经计算实验 ↗";
     }
   });
+})();
+
+(function trackNavigation() {
+  const links = [...document.querySelectorAll(".main-nav .nav-item")];
+  function update() {
+    const section = location.hash || "#home";
+    links.forEach(link => link.classList.toggle("active", link.getAttribute("href") === section));
+  }
+  window.addEventListener("hashchange", update);
+  update();
 })();

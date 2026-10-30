@@ -96,7 +96,7 @@ flowchart TD
 
 ## 7. 科学依据与技术资料
 
-v0.2 新增的神经计算模型在 [`NEUROSCIENCE-MODELS.md`](NEUROSCIENCE-MODELS.md) 中给出方程、单位、测试边界与原始文献；跨层接口与未实施模块见 [`NEUROMNEMONIC-MESH-V02.md`](NEUROMNEMONIC-MESH-V02.md)。
+v0.2 新增的神经计算模型在 [`NEUROSCIENCE-MODELS.md`](NEUROSCIENCE-MODELS.md) 中给出方程、单位、测试边界与原始文献。v0.3 增加独立的几何形态可视化与 SWC 解析，其科学范围见 [`MORPHOLOGY-V03.md`](MORPHOLOGY-V03.md)；跨层接口与未实施模块仍见 [`NEUROMNEMONIC-MESH-V02.md`](NEUROMNEMONIC-MESH-V02.md)。
 
 - McClelland, James L., Bruce L. McNaughton, and Randall C. O'Reilly. “Why There Are Complementary Learning Systems in the Hippocampus and Neocortex.” *Psychological Review*, vol. 102, no. 3, 1995, pp. 419–457. https://pubmed.ncbi.nlm.nih.gov/7624455/.
 - [The Role of Hippocampal Replay in Memory and Planning](https://pmc.ncbi.nlm.nih.gov/articles/PMC5847173/). 神经科学综述；其结论不能直接推导为工程方案已获生物验证。
